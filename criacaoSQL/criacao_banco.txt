@@ -1,0 +1,20 @@
+-- Create the 'usuarios' table
+CREATE TABLE usuarios (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    saldo DECIMAL(10, 2) DEFAULT 0.00
+);
+
+-- Create the 'contas' table
+CREATE TABLE contas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    numero_conta VARCHAR(20) NOT NULL,
+    tipo_conta VARCHAR(50),
+    agencia VARCHAR(10),
+    saldo DECIMAL(10, 2) DEFAULT 0.00,
+    historico_transacoes TEXT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+);
