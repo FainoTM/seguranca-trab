@@ -4,38 +4,30 @@ session_start();
 include("db_connection.php");
 
 if (!isset($_SESSION["username"])) {
-    //echo 'erro';
     header("Location: login.php");
     exit();
 }
 
 $user = $_SESSION["username"];
 $id = $_SESSION["id"];
-
-$sql = "SELECT u.nome, c.saldo FROM usuarios u JOIN banco.contas c ON u.id = c.id_usuario WHERE u.id = '$id'";
+$sql = "SELECT * FROM usuarios u JOIN banco.contas c ON u.id = c.id_usuario WHERE u.id = '$id'";
 $result = $conn->query($sql);
+$row = $result->fetch_assoc();
 
-// Check for errors in the query
-if (!$result) {
-    die("Error in SQL query: " . $conn->error);
-}
-
-// Check if the query returned any rows
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-} else {
-    die("No data found for the user with ID: $id");
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
+    // Destroy the session and redirect to the login page
+    session_destroy();
+    header("Location: login.php");
+    exit();
 }
 
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Conta</title>
-    <!-- Bootstrap CSS link -->
+    <!-- Add links for Bootstrap and CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body {
@@ -53,10 +45,22 @@ $conn->close();
         form {
             margin-top: 20px;
         }
+
+        .logout-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- Logout button -->
+    <form method="post" class="logout-btn">
+        <button type="submit" class="btn btn-danger">Logout</button>
+        <input type="hidden" name="logout" value="1">
+    </form>
+
     <h2 class="mt-4">Dados Bancários</h2>
     <p>Usuário: <?php echo $row["nome"]; ?></p>
     <p>Saldo: R$ <?php echo $row["saldo"]; ?></p>
@@ -73,7 +77,7 @@ $conn->close();
             <input type="number" class="form-control" name="valor" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Transferir</button>
+        <input type="submit" class="btn btn-primary" value="Transferir">
     </form>
 </div>
 
