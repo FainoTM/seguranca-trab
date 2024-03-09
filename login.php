@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['id'] = $row["id"];
 
             // Redirect to the account page or do other actions after successful login
-            header("Location: conta.php");
+            header("Location: index.php");
             exit();
         } else {
             $error = "Usuário ou senha inválidos!";
