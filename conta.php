@@ -21,6 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["voltar"])) {
+    // Redirect to the index page
+    header("Location: index.php");
+    exit();
+}
+
 $conn->close();
 ?>
 
@@ -46,6 +52,12 @@ $conn->close();
             margin-top: 20px;
         }
 
+        .voltar-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
         .logout-btn {
             position: absolute;
             top: 10px;
@@ -55,6 +67,12 @@ $conn->close();
 </head>
 <body>
 <div class="container">
+    <!-- Voltar button -->
+    <form method="post" class="voltar-btn">
+        <button type="submit" class="btn btn-info">Voltar</button>
+        <input type="hidden" name="voltar" value="1">
+    </form>
+
     <!-- Logout button -->
     <form method="post" class="logout-btn">
         <button type="submit" class="btn btn-danger">Logout</button>
