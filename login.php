@@ -107,6 +107,7 @@ $conn->close();
 
         <input type="submit" value="Login" class="btn btn-primary btn-block">
     </form>
+    <p class="text-center mt-3">Não tem uma conta? <a href="cadastro.php">Crie Uma!</a></p>
     <?php if(isset($error)) { echo "<p class='text-danger text-center'>$error</p>"; } ?>
 </div>
 </body>

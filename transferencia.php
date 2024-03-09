@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $saldo_destino = $row_destino["saldo"];
 
         // Check if the source account has sufficient balance
-        if ($saldo_origem >= $valor) {
+        if ($saldo_origem >= $valor || $saldo_destino = 0) {
             // Perform the transfer
             $novo_saldo_origem = $saldo_origem - $valor;
             $novo_saldo_destino = $saldo_destino + $valor;
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             showPopup("Transferência realizada com sucesso! Deseja realizar outra?", "conta.php");
             exit();
         } else {
-            $error = "Saldo insuficiente para realizar a transferência.";
+            echo "Saldo insuficiente para realizar a transferência.";
         }
     } else {
         $error = "Conta de destino não encontrada.";

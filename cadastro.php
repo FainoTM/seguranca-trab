@@ -1,42 +1,52 @@
 <?php
 global $conn;
-require_once "db_connection.php";
+session_start();
+include("db_connection.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = $_POST["nome"];
+    // Assuming you have sanitized the input data for security
+    $username = $_POST["nome"];
     $email = $_POST["email"];
-    $senha = password_hash($_POST["senha"], PASSWORD_DEFAULT); // Hash da senha para segurança
+    $password = password_hash($_POST["senha"], PASSWORD_DEFAULT); // Hash the password
 
-    // Verifica se o e-mail já está cadastrado
-    $sqlVerificaEmail = "SELECT id FROM usuarios WHERE email = ?";
-    $stmtVerificaEmail = $conn->prepare($sqlVerificaEmail);
-    $stmtVerificaEmail->bind_param("s", $email);
-    $stmtVerificaEmail->execute();
-    $resultVerificaEmail = $stmtVerificaEmail->get_result();
+    // Insert new user into 'usuarios' table
+    $sql_insert_user = "INSERT INTO usuarios (nome, email, senha) VALUES ('$username', '$email', '$password')";
+    $result_insert_user = $conn->query($sql_insert_user);
 
-    if ($resultVerificaEmail->num_rows > 0) {
-        $error = "E-mail já cadastrado. Tente outro.";
-    } else {
-        // Insere o novo usuário no banco de dados
-        $sqlInsereUsuario = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
-        $stmtInsereUsuario = $conn->prepare($sqlInsereUsuario);
-        $stmtInsereUsuario->bind_param("sss", $nome, $email, $senha);
+    if ($result_insert_user) {
+        // Get the ID of the newly inserted user
+        $new_user_id = $conn->insert_id;
 
-        if ($stmtInsereUsuario->execute()) {
-            // Redireciona para a página de login após o cadastro bem-sucedido
+        // Generate a random account number
+        $numero_conta = generateAccountNumber();
+
+        // Insert a corresponding account into 'contas' table with an initial balance of 0.00
+        $sql_insert_account = "INSERT INTO contas (id_usuario, numero_conta, tipo_conta, agencia, saldo, historico_transacoes)
+                               VALUES ('$new_user_id', '$numero_conta', 'Conta Padrão', '001', 0.00, 'Nova conta criada')";
+        $result_insert_account = $conn->query($sql_insert_account);
+
+        if ($result_insert_account) {
+            // Redirect to a success page or perform other actions
             header("Location: login.php");
             exit();
         } else {
-            $error = "Erro ao cadastrar usuário. Por favor, tente novamente.";
+            $error = "Erro ao criar conta. Por favor, tente novamente.";
         }
+    } else {
+        $error = "Erro ao cadastrar usuário. Por favor, tente novamente.";
     }
+}
 
-    $stmtVerificaEmail->close();
-    $stmtInsereUsuario->close();
+// Function to generate a random account number
+function generateAccountNumber() {
+    $digits = 7; // Adjust the number of digits for your account number
+    return mt_rand(pow(10, $digits-1), pow(10, $digits)-1);
 }
 
 $conn->close();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">

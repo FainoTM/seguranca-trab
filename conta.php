@@ -4,6 +4,7 @@ session_start();
 include("db_connection.php");
 
 if (!isset($_SESSION["username"])) {
+    //echo 'erro';
     header("Location: login.php");
     exit();
 }
